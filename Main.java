@@ -1,74 +1,93 @@
+package com.org.bank;
+
 import java.util.Scanner;
+import com.org.bank.dao.AccountDAO;
+import com.org.bank.dao.AccountDaoImpl;
+import com.org.bank.dao.TransactionDAO;
+import com.org.bank.dao.TransactionDAOImpl;
+import com.org.bank.model.Account;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Unary operators:");
-
-        int a = 20;
-        System.out.println(a--);
-        System.out.println(--a);
-
-        int b = 20;
-        System.out.println("a = " + a + ", b = " + b);
-        System.out.println("a == b: " + (a == b));
-        System.out.println("a != b: " + (a != b));
-        System.out.println("a > b: " + (a > b));
-        System.out.println("a < b: " + (a < b));
-        System.out.println("a >= b: " + (a >= b));
-        System.out.println("a <= b: " + (a <= b));
-
-        boolean x = true;
-        boolean y = false;
-        System.out.println("x = " + x + ", y = " + y);
-        System.out.println("x && y: " + (x && y));
-        System.out.println("x || y: " + (x || y));
-        System.out.println("!x: " + (!x));
-        System.out.println("!y: " + (!y));
-
-        int age = 50;
-        if (age >= 18) {
-            System.out.println("Eligible to vote");
-        } else {
-            System.out.println("Not eligible to vote");
-        }
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                System.out.print("j" + j);
+    public static void main(String args[]) throws Exception{
+    	AccountDAO accountDAO = new AccountDaoImpl();
+    	TransactionDAO transactionDAO= new TransactionDAOImpl();
+        Scanner sc=new Scanner(System.in);
+        while(true ){
+            System.out.println("\n==Banking Application Menu===");
+            System.out.println("1.Create a New Account");
+            System.out.println("2.View Account Details");
+            System.out.println("3.Update Account Information");
+            System.out.println("4.Deposit Money");
+            System.out.println("5.Withdraw Money");
+            System.out.println("6.Transfer Money");
+            System.out.println("7.View Transaction");
+            System.out.println("8.Check Balance");
+            System.out.println("9.Exit");
+            System.out.println("Enter your choice: ");
+            int choice=sc.nextInt();
+            sc.nextLine();
+            switch(choice){
+                case 1:
+                    System.out.println("Enter Accont Holder Name: ");
+                    String account_holder=sc.nextLine();
+                    System.out.println("Enter account type (Savings/Current): ");
+                    String account_type=sc.nextLine();
+                    System.out.println("Enter initial balance: ");
+                    double balance=sc.nextDouble();
+                    sc.nextLine();
+                    System.out.println("Enter address: ");
+                    String address=sc.nextLine();
+                    System.out.println("Enter contact Number: ");
+                    String contact_number=sc.nextLine();
+                    Account newAccount = new Account(0,account_holder,account_type,balance,address,contact_number);
+				try {
+					accountDAO.createAccount(newAccount);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+                    break;
+                    
+                case 2:
+                	System.out.print("Enter account ID to view :");
+                	int viewAccountId = sc.nextInt();
+                	Account retrievedAccount = accountDAO.viewAccount(viewAccountId);
+                	if(retrievedAccount != null) {
+                		System.out.println("Account Details: " + retrievedAccount);
+                		} else {
+                			System.out.println("Account not found");
+                		}
+                	break;
+                case 3:
+                	System.out.print("Enter account ID to update:");
+                	int updateAccountId = sc.nextInt();
+                	sc.nextLine();
+                	System.out.print("Enter new address:");
+                	String newAddress = sc.nextLine();
+                	System.out.print("Enter new contact number: ");
+                	String newContact = sc.nextLine();
+                	accountDAO.updateAccountInfo(updateAccountId, newAddress, newContact);
+                	break;
+                case 4:
+                	System.out.print("Enter account ID to deposit into:");
+                	int depositAccountId = sc.nextInt();
+                	System.out.print("Enter amount to deposit:");
+                	double depositAmount=sc.nextDouble();
+                	transactionDAO.deposit(depositAccountId, depositAmount);
+                	break;
+                	
+                case 5:
+                    System.out.println("Enter account ID to withdraw: ");
+                    int withdrawAccountId=sc.nextInt();
+                    System.out.println("Enter amount to withdraw: ");
+                    double withdrawAmount=sc.nextDouble();
+                    transactionDAO.withdraw(withdrawAccountId,withdrawAmount);
+                    break;
+                	
             }
-            System.out.println(" i" + i);
-        }
 
-        int rows = 8;
-        for (int i = 1; i <= rows; i++) {
-            for (int j = i; j < rows; j++) {
-                System.out.print(" ");
-            }
-            for (int k = 1; k <= (2 * i - 1); k++) {
-                System.out.print("*");
-            }
-            System.out.println();
-        }
-        System.out.print("Enter your score (0-100): ");
-        int sc = scanner.nextInt();
 
-        if (sc >= 0 && sc <= 100) {
-            if (sc >= 90) {
-                System.out.println("Grade: A");
-            } else if (sc>= 80) {
-                System.out.println("Grade: B");
-            } else if (sc >= 70) {
-                System.out.println("Grade: C");
-            } else if (sc >= 60) {
-                System.out.println("Grade: D");
-            } else {
-                System.out.println("Grade: F");
-            }
-        } else {
-            System.out.println("Invalid score! Please enter a score between 0 and 100.");
         }
-
-        scanner.close();
     }
 }
